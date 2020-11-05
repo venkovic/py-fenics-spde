@@ -17,11 +17,11 @@ tol = 1E-14
 np.random.seed(123456789)
 
 
-def kappa_ij():
- pass
+def get_system(coeff, mesh, nd, type_domain):
+  """
+  Returns A, b.
 
-
-def get_system(KL_real, mesh, nd, type_domain, symmetry='anisotropic'):
+  """
   # Define function space
   V = fe.FunctionSpace(mesh, 'CG', 1)
   u, v = fe.TestFunction(V), fe.TrialFunction(V)
@@ -60,31 +60,8 @@ def get_system(KL_real, mesh, nd, type_domain, symmetry='anisotropic'):
   # Define forcing term
   f = fe.Constant(1)
   #
-  if symmetry == 'isotropic':
-    #
-    # Define coefficient field
-    kappa = fe.Function(V)
-    kappa.vector()[:] = np.exp(KL_real.vector()[:])
-    #fe.local_project(np.exp(KL_real), V, kappa)
-    # Implement smth like this, as found googling "fenics local_project"
-  #
-  elif symmetry == 'anisotropic':
-    #
-    # Define tensorial function space of coefficient
-    VV = fe.TensorFunctionSpace(mesh, 'CG', 1)
-    #
-    # Define coefficient field
-    kappa = fe.Function(VV)
-    #
-    components = np.zeros(VV.dim())
-    for i in range(nd):
-      for j in range(nd):
-        ind = j + nd * i
-        components[(np.arange(VV.dim()) % VV.num_sub_spaces()) == ind] = np.exp(KL_real.vector()[:])
-    kappa.vector()[:] = components.copy()
-  #
   # Define bilinear & linear forms
-  a = fe.dot(kappa * fe.grad(u), fe.grad(v)) * fe.dx
+  a = fe.dot(coeff * fe.grad(u), fe.grad(v)) * fe.dx
   L = f * v * fe.dx
   #
   # Assemble linear system
@@ -96,6 +73,7 @@ def get_system(KL_real, mesh, nd, type_domain, symmetry='anisotropic'):
   A = sp.csr_matrix((val, col, row))
   b = b.get_local()
   return A, b
+
 
 def get_median_A(mesh, nd, type_domain):
   V = fe.FunctionSpace(mesh, 'CG', 1)

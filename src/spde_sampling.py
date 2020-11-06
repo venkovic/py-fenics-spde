@@ -200,3 +200,12 @@ class sampler:
 
     """
     return self.__mesh
+  #
+  #
+  @property
+  def DoF(self):
+    """
+    Returns number of DoFs.
+
+    """
+    return self.__DoF

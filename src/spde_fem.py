@@ -75,12 +75,8 @@ def get_system(coeff, mesh, nd, type_domain):
   return A, b
 
 
-def get_median_A(mesh, nd, type_domain):
-  V = fe.FunctionSpace(mesh, 'CG', 1)
-  DoF = V.dim()
-  KL0 = fe.Function(V)
-  KL0.vector()[:] = np.zeros(DoF)
-  median_A, _ = get_system(KL0, mesh, nd, type_domain)
+def get_median_A(median_coeff, mesh, nd, type_domain):
+  median_A, _ = get_system(median_coeff, mesh, nd, type_domain)
   return median_A
 
 

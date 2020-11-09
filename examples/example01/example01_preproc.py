@@ -80,4 +80,5 @@ def plot_coeff(discretized_spde, nsmp=4, smp_type='mc'):
     pl.subplots_adjust(hspace=.1, wspace=.01)
     #
     k = discretized_spde.symmetry['k']
-    pl.savefig('%s%s_k_omega%d.png' % (img_path, smp_type, k), bbox_inches='tight', dpi=300)
+    ratio = discretized_spde.symmetry['ratio']
+    pl.savefig('%s%s_k_omega%d_ratio%g.png' % (img_path, smp_type, k, ratio), bbox_inches='tight', dpi=300)

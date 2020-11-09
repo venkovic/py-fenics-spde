@@ -9,13 +9,12 @@ import sys
 sys.path += ['../../src/']
 
 
-do_preproc_kl = True
 do_preproc_plot_coeffs = False
 do_solve = True
 do_postproc = False
 
 nd = 2
-nEl, type_domain = 16_000, 'ublock'
+nEl, type_domain = 16_000, 'ublock' # (2_000, 4_000, 16_000,), ('ublock',)
 sig2, L = 1., .2
 model = "SExp" # ('Exp', 'SExp')
 delta2 = 1 - .995
@@ -29,11 +28,13 @@ nsmp = 100
 #symmetry = {'type': 'random_u1_u2_theta', 'theta': (0, 3 * np.pi),}
 #symmetry = {'type': 'deterministic_ratio_random_u1_u2_theta', 'theta': (0, 3 * np.pi), 'ratio':.01}
 
-k_omegas = (1, 2, 5, 10,)
+k_omegas = (1,) #(1, 2, 5, 10,)
+ratios = (1e-3,) # (1, 1e-1, 1e-2, 1e-3,)
+
 symmetries = []
 for k_omega in k_omegas:
-  symmetries += [{'type': 'deterministic_ratio_random_theta', 'ratio': .01, 'omega': 1 / (k_omega * np.pi), 'k': k_omega}]
-
+  for ratio in ratios:
+    symmetries += [{'type': 'deterministic_ratio_random_theta', 'ratio': ratio, 'omega': 1 / (k_omega * np.pi), 'k': k_omega}]
 
 from example01_preproc import get_spde
 if do_preproc_plot_coeffs:
@@ -55,7 +56,7 @@ for isym, symmetry in enumerate(symmetries):
       plot_coeff(discretized_spde)  
     #
     if do_solve:  
-      solve_systems(discretized_spde, nsmp, nd=nd, type_domain=type_domain)  
+      solve_systems(discretized_spde, nEl, nsmp, nd=nd, type_domain=type_domain)  
     #
     elif do_postproc:
       plot_results()

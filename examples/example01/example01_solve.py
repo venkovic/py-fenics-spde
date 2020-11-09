@@ -5,7 +5,7 @@ from solver import pcg, set_amg_precond
 
 solve_path = 'data/solve/'
 
-def solve_systems(discretized_spde, nsmp, nd=2, type_domain='ublock'):
+def solve_systems(discretized_spde, nEl, nsmp, nd=2, type_domain='ublock', smp_type='mc'):
   """
   Iterative solves of linear systems
   """
@@ -44,8 +44,10 @@ def solve_systems(discretized_spde, nsmp, nd=2, type_domain='ublock'):
   sys.stdout.flush()
 
   if discretized_spde.symmetry['type'] == 'deterministic_ratio_random_theta':
-    np.save('%s%s_k_omega%d.pcg-amg-median.iters' % (solve_path, smp_type, discretized_spde.symmetry['k']), iters['0'])
-    np.save('%s%s_k_omega%d.pcg-amg-current.iters' % (solve_path, smp_type, discretized_spde.symmetry['k']), iters['t'])
+    k = discretized_spde.symmetry['k']
+    ratio = discretized_spde.symmetry['ratio']
+    np.save('%s%s_k_omega%d_ratio%g.%dDoFs.pcg-amg-median.iters' % (solve_path, smp_type, k, ratio, nEl), iters['0'])
+    np.save('%s%s_k_omega%d_ratio%g.%dDoFs.pcg-amg-current.iters' % (solve_path, smp_type, k, ratio, nEl), iters['t'])
 
 
 def investigate_amg_setup():

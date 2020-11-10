@@ -77,6 +77,47 @@ def to_vtk(KL_real, fname='KL_real'):
   vtkfile << KL_real
 
 
+def to_axis(coeff_vector, mesh, ax, plot='lognorm'):
+  if mpl_is_available:
+    #
+    # Create the triangulation
+    nvrt = mesh.num_vertices()
+    nd_geo = mesh.geometry().dim()
+    mesh_coordinates = mesh.coordinates().reshape((nvrt, nd_geo))
+    triangles = np.asarray([cell.entities(0) for cell in fe.cells(mesh)])
+    triangulation = tri.Triangulation(mesh_coordinates[:, 0], mesh_coordinates[:, 1], triangles)
+    V = fe.FunctionSpace(mesh, "CG", 1)
+    vrt2dof = fe.vertex_to_dof_map(V)
+    #
+    # Plot realization
+    #fig, ax = plt.subplots()
+    if plot == 'normal':
+      ax.set_aspect('equal')
+      im = ax.tripcolor(triangulation, coeff_vector[vrt2dof], norm=colors.Normalize(vmin=-3.2, vmax=3.2))
+      ax.axis('off')
+    #
+    elif plot == 'lognorm':
+      im = ax.tripcolor(triangulation, coeff_vector[vrt2dof], norm=colors.LogNorm(vmin=np.exp(-3.2), vmax=np.exp(3.2)))
+      #cb_ax = fig.add_axes([0.91, 0.1, 0.02, 0.8])
+      #cbar = fig.colorbar(im, cax=cb_ax)
+      #ax.axis('off')
+      ax.set_xlim((0, 1))
+      ax.set_xticks((0, .25, .5, .75, 1))
+      #ax.set_xticklabels((r'$0$', '', r'$0.5$', '', r'$1$'))
+      ax.set_xticklabels(('', '', '', '', ''))
+      ax.set_ylim((0, 1))
+      ax.set_yticks((0, .25, .5, .75, 1))
+      #ax.set_yticklabels((r'$0$', r'$0.25$', r'$0.50$', r'$0.75$', r'$1$'))
+      ax.set_yticklabels(('', '', '', '', ''))
+    #
+    #plt.savefig('%s.%s' %(fname, ext), bbox_inches='tight')
+    #plt.clf()
+    #plt.cla()
+    #plt.close()
+    #return ax
+    return im
+
+
 def to_file(KL_real, mesh, V=None, fname='KL_real', ext='png'):
   if mpl_is_available:
     #
@@ -96,6 +137,7 @@ def to_file(KL_real, mesh, V=None, fname='KL_real', ext='png'):
       im = ax.tripcolor(triangulation, KL_real.vector()[vrt2dof], norm=colors.Normalize(vmin=-3.2,vmax=3.2))
       ax.axis('off')
     else:
+      ax.set_aspect('equal')
       im = ax.tripcolor(triangulation, KL_real.vector()[vrt2dof], norm=colors.LogNorm(vmin=np.exp(-3.2),vmax=np.exp(3.2)))
       #cb_ax = fig.add_axes([0.91, 0.1, 0.02, 0.8])
       #cbar = fig.colorbar(im, cax=cb_ax)

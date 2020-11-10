@@ -65,7 +65,7 @@ class sampler:
         self.__initiated = True
     elif ('hybrid_md' in self.__smp) | ('hybrid_ld' in self.__smp):
       self.nmcmc = nmcmc
-      self.__vsig2 = 2.38**2/self.nmcmc
+      self.__vsig2 = 2.38 ** 2 / self.nmcmc
       self.__initiated = False
     elif self.__smp == "from-xis":
       pass
@@ -209,3 +209,12 @@ class sampler:
 
     """
     return self.__DoF
+  #
+  #
+  @property
+  def smp_type(self):
+    """
+    Returns smp_type.
+
+    """
+    return self.__smp
